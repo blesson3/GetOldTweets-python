@@ -8,7 +8,9 @@ i=0
 while [ "$d" != "$d2" ]; do 
   next=$(date -I -d "$d + 1 day")
   echo "spinning up for ${d} - ${next}"
-  python ../GetTweets.py --querysearch "$search" --since "$d" --until "$next" --output "${fileNameFriendlySearch}_${d}.csv" --maxtweets 1000000 > "logs/${fileNameFriendlySearch}_${d}_log.out" &
+  echo "python ../GetTweets.py --querysearch \"$search\" --since \"${d}\" --until \"$next\" --output \"${fileNameFriendlySearch}_${d}.csv\" --maxtweets 1000000 > \"logs/${fileNameFriendlySearch}_${d}_log.out\" &"
+
+  python ../GetTweets.py --querysearch "${search}" --since "${d}" --until "${next}" --output "${fileNameFriendlySearch}_${d}.csv" --maxtweets 1000000 > "logs/${fileNameFriendlySearch}_${d}_log.out" &
   
   d=$next
   i=$((i+1))
