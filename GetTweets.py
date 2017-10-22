@@ -5,6 +5,17 @@ if sys.version_info[0] < 3:
 else:
     import got3 as got
 
+import calendar
+
+def dt2ts(dt):
+  """Converts a datetime object to UTC timestamp
+
+	naive datetime will be considered UTC.
+
+	"""
+
+  return calendar.timegm(dt.utctimetuple())
+
 def main(argv):
 
 	if len(argv) == 0:
@@ -57,17 +68,17 @@ def main(argv):
 				
 		outputFile = codecs.open(outputFileName, "w+", "utf-8")
 
-		outputFile.write('username;date;retweets;favorites;text;geo;mentions;hashtags;id;permalink')
+		outputFile.write('timestamp,screenName,text')
 
 		print('Searching...\n')
 
 		def receiveBuffer(tweets):
 			for t in tweets:
-				outputFile.write(('\n%s,%s,"%s"' % (t.username, t.date.strftime("%Y-%m-%d %H:%M:%S"),t.text)))
+				outputFile.write(('\n%d,%s,"%s"' % (t.timestamp, t.username, t.text)))
 			outputFile.flush();
 			print('More %d saved on file...\n' % len(tweets))
 
-		got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer, 200)
+		got.manager.TweetManager.getTweets(tweetCriteria, receiveBuffer, 100)
 
 	except arg:
 		print('Arguments parser error, try -h' + arg)

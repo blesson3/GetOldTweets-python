@@ -23,12 +23,14 @@ class TweetManager:
 		while active:
 			json = TweetManager.getJsonReponse(tweetCriteria, refreshCursor, cookieJar, proxy)
 			if len(json['items_html'].strip()) == 0:
+				print("break!")
 				break
 
 			refreshCursor = json['min_position']			
 			tweets = PyQuery(json['items_html'])('div.js-stream-tweet')
 			
 			if len(tweets) == 0:
+				print("no more tweets!")
 				break
 			
 			for tweetHTML in tweets:
@@ -53,6 +55,7 @@ class TweetManager:
 				tweet.username = usernameTweet
 				tweet.text = txt
 				tweet.date = datetime.datetime.fromtimestamp(dateSec)
+				tweet.timestamp = dateSec
 				tweet.retweets = retweets
 				tweet.favorites = favorites
 				tweet.mentions = " ".join(re.compile('(@\\w*)').findall(tweet.text))
@@ -68,17 +71,20 @@ class TweetManager:
 				
 				if tweetCriteria.maxTweets > 0 and len(results) >= tweetCriteria.maxTweets:
 					active = False
+					print("active = False because MaxTweets = "+str(tweetCriteria.maxTweets)+" and length of results is "+str(len(results)))
 					break
-					
+
 		
 		if receiveBuffer and len(resultsAux) > 0:
 			receiveBuffer(resultsAux)
+
+  # print("done!")
 		
 		return results
 	
 	@staticmethod
 	def getJsonReponse(tweetCriteria, refreshCursor, cookieJar, proxy):
-		url = "https://twitter.com/i/search/timeline?f=tweets&q=%s&src=typd&max_position=%s"
+		url = "https://twitter.com/i/search/timeline?l=en&f=tweets&q=%s&src=typd&max_position=%s"
 		
 		urlGetData = ''
 		
